@@ -20,7 +20,7 @@ tags:
   description: "Operaciones sobre mensajes"
 - name: "reactions"
   description: "Operaciones sobre reacciones a mensajes"
-- name: "hashtag"
+- name: "hashtags"
   description: "Operaciones sobre hashtags"
 schemes:
 - "https"
@@ -45,6 +45,31 @@ paths:
       responses:
         default:
           description: "successful operation"
+    put:
+      tags:
+      - "user"
+      summary: "Update user"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user_name"
+        in: "path"
+        description: "Username of user to be updated"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        400:
+          description: "Invalid user supplied"
+        404:
+          description: "User not found"
   /user/login:
     get:
       tags:
@@ -95,52 +120,7 @@ paths:
       responses:
         default:
           description: "successful operation"
-  /user/{user_name}:
-    put:
-      tags:
-      - "user"
-      summary: "Update user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "user_name"
-        in: "path"
-        description: "Username of user to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "user_name"
-        in: "path"
-        description: "Username of user to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/{user_name}/reset-password:
+  /user/reset-password:
     get:
       tags:
       - "user"
@@ -161,7 +141,7 @@ paths:
         404:
           description: "User not found"
 
-  /user/{user_name}/subscriptions:
+  /user/subscriptions:
     get:
       tags:
       - "user"
@@ -236,18 +216,27 @@ paths:
               $ref: "#/definitions/Message"
         400:
           description: "Invalid channel id supplied"
-  
-  /messages/{message_id}:
+
+  /messages/{message_id}/reactions:
     get:
       tags:
       - "messages"
-      summary: "Gets a specific message"
+      - "reactions"
+      summary: "Adds or modifies a reeaction to a message"
       description: ""
-      operationId: "getMessage"
-    put:
+      operationId: "createMessage"
+    post:
       tags:
       - "messages"
-      summary: "Updates an existing message"
+      - "reactions"
+      summary: "Adds or modifies a reeaction to a message"
+      description: ""
+      operationId: "createMessage"
+    delete:
+      tags:
+      - "messages"
+      - "reactions"
+      summary: "Adds or modifies a reeaction to a message"
       description: ""
       operationId: "createMessage"
 
@@ -298,31 +287,6 @@ paths:
       responses:
         default:
           description: "successful operation"
-  
-  /channels/{channel_id}/messages:
-    get:
-      tags:
-      - "channels"
-      - "messages"
-      summary: "Obtener los mensajes de un canal"
-    post:
-      tags:
-      - "channels"
-      summary: "Agregar un nuevo mensaje a un canal"
-      description: ""
-      operationId: "createChannel"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created channel object"
-        required: true
-        schema:
-          $ref: "#/definitions/Channel"
-      responses:
-        default:
-          description: "successful operation"
 
   /reactions:
     get:
@@ -330,55 +294,13 @@ paths:
       - "reactions"
       summary: "Get all reactions"
 
-  /reactions/{message_id}:
+  /hashtags:
     get:
       tags:
-      - "reactions"
-      summary: "Get all reactions for a given message"
-    post:
-      tags:
-      - "reactions"
-      summary: "Add or update a reaction to a message"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "user_name"
-        in: "path"
-        description: "Username of user to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "reactions"
-      summary: "Delete a reaction to a message"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "user_name"
-        in: "path"
-        description: "Username of user to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
+      - "hashtags"
+      summary: "Gets all hashtags"
+      description: ""
+      operationId: "createMessage"
           
 securityDefinitions:
   petstore_auth:
@@ -392,44 +314,8 @@ securityDefinitions:
     type: "apiKey"
     name: "api_key"
     in: "header"
+
 definitions:
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-        default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
   User:
     type: "object"
     properties:
@@ -438,23 +324,15 @@ definitions:
         format: "int64"
       username:
         type: "string"
-      firstName:
+      first_name:
         type: "string"
-      lastName:
+      last_name:
         type: "string"
       email:
         type: "string"
       password:
         type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-  Tag:
+  Channel:
     type: "object"
     properties:
       id:
@@ -462,9 +340,31 @@ definitions:
         format: "int64"
       name:
         type: "string"
-    xml:
-      name: "Tag"
-  Pet:
+      description:
+        type: "string"
+  Message:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      channel_id:
+        type: "string"
+      content:
+        type: "string"
+      response_to:
+        type: "integer"
+        format: "int64"
+        default: null
+  Reaction:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+  Hashtag:
     type: "object"
     required:
     - "name"
