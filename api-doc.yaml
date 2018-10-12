@@ -169,10 +169,7 @@ paths:
     get:
       tags:
       - "user"
-Smartbear
-Terms of Use | SmartBear Software
-End-User License Agreement between SmartBear Software and customers from USA & Canada.
-- "channels"
+      - "channels"
       summary: "Get channels to which user is subscribed"
       description: ""
       operationId: "getUserSubscriptions"
@@ -326,8 +323,7 @@ End-User License Agreement between SmartBear Software and customers from USA & C
         200:
           description: "successful operation" 
         400:
-          description: "Ca
-n not delete a reaction you have not created"    
+          description: "Can not delete a reaction you have not created"    
         404:
           description: "Reaction not found"
         405:
