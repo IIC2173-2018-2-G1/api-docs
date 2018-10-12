@@ -1,5 +1,5 @@
 # Arquitran API OpenAPI Specification
-[![Build Status](https://travis-ci.org/IIC2173-2018-2-G1/api-docs.svg?branch=master)](https://travis-ci.org/IIC2173-2018-2-G1/api-docs)
+[![Build Status](https://travis-ci.com/IIC2173-2018-2-G1/api-docs.svg?branch=master)](https://travis-ci.org/IIC2173-2018-2-G1/api-docs)
 
 ## Links
 
