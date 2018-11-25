@@ -3,7 +3,7 @@ info:
   description: "Documentación para proyecto 2018-2"
   version: "1.0.0"
   title: "Arquitrán SPA API"
-host: "http://charette1.ing.puc.cl"
+host: "charette1.ing.puc.cl"
 basePath: "/api/v1"
 tags:
   - name: "users"
@@ -89,13 +89,13 @@ paths:
       responses:
         200:
           description: "successful operation"
-          headers:
-            Set-Cookie:
-              schema:
-                type: string
-                example: _SESSION=abcde12345; Path=/; HttpOnly
           schema:
             $ref: "#/definitions/UserResponse"
+          headers:
+            Set-Cookie:
+              type: string
+              description: cookie that contains the session key
+              
         400:
           description: "Invalid username/password supplied"
   /users/current:
