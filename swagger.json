@@ -1,0 +1,788 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Documentación para proyecto 2018-2",
+    "version": "1.0.0",
+    "title": "Arquitrán SPA API"
+  },
+  "host": "charette1.ing.puc.cl",
+  "basePath": "/api/v1",
+  "tags": [
+    {
+      "name": "users",
+      "description": "Operations concerning users"
+    },
+    {
+      "name": "channels",
+      "description": "Operations concerning channels"
+    },
+    {
+      "name": "messages",
+      "description": "Operations concerning messages"
+    },
+    {
+      "name": "reactions",
+      "description": "Operations concerning reactions"
+    },
+    {
+      "name": "hashtags",
+      "description": "Operations concerning hashtags"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "SessionCookie": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "_session"
+    }
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "summary": "Get all users",
+        "description": "",
+        "operationId": "getUsers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UserResponseNoEmail"
+              }
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create user",
+        "description": "",
+        "operationId": "createUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created user object",
+            "schema": {
+              "$ref": "#/definitions/UserCreate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User created succesfully",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Logs user into the system",
+        "description": "",
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            },
+            "headers": {
+              "Set-Cookie": {
+                "type": "string",
+                "description": "cookie that contains the session key"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied"
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "summary": "Gets the logged in user info",
+        "description": "",
+        "operationId": "getCurrentUser",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "summary": "Update the logged in user",
+        "description": "Can update any of first name, last name or password.",
+        "operationId": "updateUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "succesful operation",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid user supplied"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/users/reset-password": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Request for a password reset",
+        "description": "",
+        "operationId": "resetPassword",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "succesful operation"
+          },
+          "400": {
+            "description": "Email does not match"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/users/current/subscriptions": {
+      "get": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "users",
+          "channels"
+        ],
+        "summary": "Get channels to which user is subscribed",
+        "description": "",
+        "operationId": "getUserSubscriptions",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Channel"
+              }
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/messages": {
+      "post": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "messages"
+        ],
+        "summary": "Creates a new message",
+        "description": "",
+        "operationId": "createMessage",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created message object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message created succesfully",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "messages"
+        ],
+        "summary": "Gets an array of messages",
+        "description": "Starting from the newest message number _start_, returns the following _count_ messages for the given channel. One of _hashtag_ or _channel_id_ must be provided in order to filter the requested messages",
+        "operationId": "getMessages",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "channel_id",
+            "type": "string",
+            "description": "Filter messages to only the ones on this channel"
+          },
+          {
+            "in": "query",
+            "name": "hashtag",
+            "type": "string",
+            "description": "Filter messages to only the ones that contain this hashtag"
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "type": "integer",
+            "description": "Once filtered, messages are ordered by time. This parameters tells the server to ignore the latest `start` messages."
+          },
+          {
+            "in": "query",
+            "name": "count",
+            "type": "integer",
+            "description": "Limit the response to a maximum of `count` messages."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Message"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/messages/{message_id}/reactions": {
+      "put": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "messages"
+        ],
+        "summary": "Modifies the user reaction to a message",
+        "description": "",
+        "operationId": "createOrModifyReaction",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "description": "ID of the mesage to post the reaction",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created/Modified reaction object",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reaction_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": {
+            "description": "Reaction not found"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/channels": {
+      "get": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "channels"
+        ],
+        "summary": "Gets an array of all the existing channels",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Channel"
+              }
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "channels"
+        ],
+        "summary": "Creates a new channel",
+        "description": "",
+        "operationId": "createChannel",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created channel object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Channel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Channel"
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/channel/{channel_id}": {
+      "put": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "channels"
+        ],
+        "summary": "Perform an action over the channel",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "description": "ID of the channel over which to perform the given action",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Action to perform over the channel. Must be one of: `subscribe`, `unsubscribe`",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Channel"
+              }
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/hashtags": {
+      "get": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "hashtags"
+        ],
+        "summary": "Gets all hashtags",
+        "description": "",
+        "operationId": "getHashtags",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Hashtag"
+              }
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/reactions": {
+      "get": {
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "tags": [
+          "reactions"
+        ],
+        "summary": "Gets all reactions",
+        "description": "",
+        "operationId": "getReactions",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Reaction"
+              }
+            }
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "UserResponse": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/User"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "UserCreate": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/User"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "password": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "UserUpdate": {
+      "type": "object",
+      "properties": {
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "UserResponseNoEmail": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "Channel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "channel_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "response_to": {
+          "type": "string"
+        },
+        "reactions": {
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "reaction_id": {
+                "type": "string"
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Hashtag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Reaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}

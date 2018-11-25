@@ -1,0 +1,11 @@
+{
+  "generator-openapi-repo": {
+    "importExistingSpec": true,
+    "importedSpec": "./api-doc.yaml",
+    "name": "Arquitran API",
+    "repo": "IIC2173-2018-2-G1/api-docs",
+    "splitSpec": false,
+    "samples": true,
+    "installSwaggerUI": true
+  }
+}
